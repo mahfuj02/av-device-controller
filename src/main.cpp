@@ -1,52 +1,52 @@
-// main.cpp — Day 2 sanity check for the Display class.
-// Goal: prove that we can construct a Display, mutate it through setters,
-// read its state through getters, and that bad inputs are rejected cleanly.
+// main.cpp — Day 3 sanity check for the parser.
+// Drives parse() with a handful of inputs and prints the resulting struct.
 
-#include "display.h"
+#include "parser.h"
 #include <iostream>
+#include <string>
+#include <vector>
+
+void printResult(const std::string& input) {
+    std::cout << "Input: \"" << input << "\"\n";
+    try {
+        ParsedCommand cmd = parse(input);
+        std::cout << "  isAll="     << std::boolalpha << cmd.isAll
+                  << "  displayId=" << cmd.displayId
+                  << "  command=\"" << cmd.command << "\"";
+        std::cout << "  args=[";
+        for (size_t i = 0; i < cmd.args.size(); ++i) {
+            if (i > 0) std::cout << ", ";
+            std::cout << "\"" << cmd.args[i] << "\"";
+        }
+        std::cout << "]\n";
+    } catch (const std::exception& e) {
+        std::cout << "  ERROR: " << e.what() << "\n";
+    }
+    std::cout << "\n";
+}
 
 int main() {
-    std::cout << "AV Device Controller v1.0\n\n";
+    std::vector<std::string> tests = {
+        // valid
+        "DISPLAY 2 SET_VOLUME 60",
+        "ALL SET_POWER ON",
+        "STATUS",
+        "HELP",
+        "display 1 set_input hdmi",        // lowercase — should still uppercase
+        "ALL SET_INPUT HDMI",
 
-    // 1. Build a Display. Defaults come from the constructor in display.cpp:
-    //    power off, vol 50, brightness 80, input HDMI, temp 35C.
-    Display d(1, "MainBar");
-    std::cout << "Initial state:\n  " << d.getStatus() << "\n\n";
+        // edge cases / errors
+        "",                                 // empty → throws
+        "DISPLAY",                          // missing ID and command → throws
+        "ALL",                              // missing command → throws
+        "DISPLAY abc SET_VOLUME 60",        // non-numeric ID → throws (stoi)
 
-    // 2. Drive it through valid setters. Each call mutates one field;
-    //    everything else stays the same — that's encapsulation working.
-    d.setPower(true);
-    d.setVolume(60);
-    d.setInput("AV");
-    std::cout << "After setPower(true), setVolume(60), setInput(\"AV\"):\n  "
-              << d.getStatus() << "\n\n";
+        // structurally fine but nonsense — should NOT throw at parser
+        "BANANA",                           // direct cmd "BANANA"
+        "My name is Mahfuj",                // direct cmd "MY", args ["NAME","IS","MAHFUJ"]
+    };
 
-    // 3. Try invalid inputs. The setters throw std::invalid_argument;
-    //    we catch and print so the program keeps running instead of crashing.
-    std::cout << "Testing invalid inputs (these should be rejected):\n";
-
-    try {
-        d.setVolume(150);                       // out of range — should throw
-    } catch (const std::exception& e) {
-        std::cout << "  [ERROR] " << e.what() << "\n";
-    }
-
-    try {
-        d.setBrightness(-10);                   // out of range — should throw
-    } catch (const std::exception& e) {
-        std::cout << "  [ERROR] " << e.what() << "\n";
-    }
-
-    try {
-        d.setInput("VGA");                      // not HDMI/AV/DP — should throw
-    } catch (const std::exception& e) {
-        std::cout << "  [ERROR] " << e.what() << "\n";
-    }
-
-    // 4. After the failed calls, the Display state should be unchanged.
-    //    If the throw worked correctly, volume is still 60, brightness 80, input AV.
-    std::cout << "\nState after rejected inputs (should match step 2):\n  "
-              << d.getStatus() << "\n";
-
+    std::cout << "=== Parser test ===\n\n";
+    for (const auto& t : tests) printResult(t);
     return 0;
 }
