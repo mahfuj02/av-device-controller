@@ -1,52 +1,40 @@
-// main.cpp — Day 3 sanity check for the parser.
-// Drives parse() with a handful of inputs and prints the resulting struct.
+// main.cpp — Day 4 REPL (Read-Eval-Print Loop).
+// Interactive command prompt that drives the Controller end-to-end.
 
+#include "controller.h"
 #include "parser.h"
 #include <iostream>
 #include <string>
-#include <vector>
-
-void printResult(const std::string& input) {
-    std::cout << "Input: \"" << input << "\"\n";
-    try {
-        ParsedCommand cmd = parse(input);
-        std::cout << "  isAll="     << std::boolalpha << cmd.isAll
-                  << "  displayId=" << cmd.displayId
-                  << "  command=\"" << cmd.command << "\"";
-        std::cout << "  args=[";
-        for (size_t i = 0; i < cmd.args.size(); ++i) {
-            if (i > 0) std::cout << ", ";
-            std::cout << "\"" << cmd.args[i] << "\"";
-        }
-        std::cout << "]\n";
-    } catch (const std::exception& e) {
-        std::cout << "  ERROR: " << e.what() << "\n";
-    }
-    std::cout << "\n";
-}
 
 int main() {
-    std::vector<std::string> tests = {
-        // valid
-        "DISPLAY 2 SET_VOLUME 60",
-        "ALL SET_POWER ON",
-        "STATUS",
-        "HELP",
-        "display 1 set_input hdmi",        // lowercase — should still uppercase
-        "ALL SET_INPUT HDMI",
+    Controller ctrl;
 
-        // edge cases / errors
-        "",                                 // empty → throws
-        "DISPLAY",                          // missing ID and command → throws
-        "ALL",                              // missing command → throws
-        "DISPLAY abc SET_VOLUME 60",        // non-numeric ID → throws (stoi)
+    // Hardcode some displays for now. Day 9 will replace this with
+    // loading from config/displays.cfg.
+    ctrl.addDisplay(1, "MainBar");
+    ctrl.addDisplay(2, "PoolTable");
+    ctrl.addDisplay(3, "Entrance");
+    ctrl.addDisplay(4, "Patio");
+    ctrl.addDisplay(5, "BackRoom");
 
-        // structurally fine but nonsense — should NOT throw at parser
-        "BANANA",                           // direct cmd "BANANA"
-        "My name is Mahfuj",                // direct cmd "MY", args ["NAME","IS","MAHFUJ"]
-    };
+    std::cout << "AV Device Controller v1.0\n";
+    std::cout << "Type HELP for commands. Type QUIT to exit.\n\n";
 
-    std::cout << "=== Parser test ===\n\n";
-    for (const auto& t : tests) printResult(t);
+    std::string input;
+    while (true) {
+        std::cout << "> ";
+        if (!std::getline(std::cin, input)) break;   // Ctrl+Z / EOF
+        if (input.empty()) continue;
+        if (input == "QUIT" || input == "quit") break;
+
+        try {
+            ParsedCommand cmd = parse(input);
+            ctrl.execute(cmd);
+        } catch (const std::exception& e) {
+            std::cout << "[ERROR] " << e.what() << "\n";
+        }
+    }
+
+    std::cout << "Shutting down. Goodbye.\n";
     return 0;
 }

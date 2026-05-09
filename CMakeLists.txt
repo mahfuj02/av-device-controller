@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(SOURCES
     src/main.cpp
     src/display.cpp
-    # src/controller.cpp
+    src/controller.cpp
     src/parser.cpp
     # src/logger.cpp
     # src/alert.cpp
