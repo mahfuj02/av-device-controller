@@ -31,7 +31,9 @@ void Controller::execute(const ParsedCommand& cmd) {
 
     // Day 4: only single-display commands. (ALL comes Day 5.)
     if (cmd.isAll) {
-        std::cout << "[ERROR] ALL broadcast not implemented yet (Day 5)\n";
+            for (auto& d : displays){
+                executeOnDisplay(d, cmd);
+            }
         return;
     }
 
