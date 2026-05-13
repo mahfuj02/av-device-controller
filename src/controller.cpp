@@ -5,91 +5,152 @@
 #include <iostream>
 #include <stdexcept>
 
-Controller::Controller() {
+// Returns true if `cmd` is a per-display command that executeOnDisplay
+// knows how to run. Used to avoid spamming the same error 5 times in a
+// broadcast.
+static bool isPerDisplayCommand(const std::string &cmd)
+{
+    return cmd == "SET_POWER" || cmd == "SET_VOLUME" || cmd == "SET_BRIGHTNESS" || cmd == "SET_INPUT";
+}
+
+Controller::Controller()
+{
     // Nothing to do for now. Displays are added later via addDisplay().
 }
 
-void Controller::addDisplay(int id, const std::string& name) {
+void Controller::addDisplay(int id, const std::string &name)
+{
     displays.emplace_back(id, name);
 }
 
-void Controller::execute(const ParsedCommand& cmd) {
+void Controller::execute(const ParsedCommand &cmd)
+{
     // Direct, no-target commands first.
-    if (cmd.command == "STATUS") {
+    if (cmd.command == "STATUS")
+    {
         printStatus();
         return;
     }
-    if (cmd.command == "HELP") {
+    if (cmd.command == "HELP")
+    {
         std::cout << "Commands:\n"
                   << "  DISPLAY <id> SET_POWER ON|OFF\n"
                   << "  DISPLAY <id> SET_VOLUME 0-100\n"
                   << "  DISPLAY <id> SET_BRIGHTNESS 0-100\n"
                   << "  DISPLAY <id> SET_INPUT HDMI|AV|DP\n"
-                  << "  STATUS  HELP  QUIT\n";
+                  << "  ALL <command> [args...]   - broadcast to every display\n"
+                  << "  STATUS                    - show all display states\n"
+                  << "  HELP                      - show this message\n"
+                  << "  QUIT                      - exit the program\n";
         return;
     }
 
     // Day 4: only single-display commands. (ALL comes Day 5.)
-    if (cmd.isAll) {
-            for (auto& d : displays){
-                executeOnDisplay(d, cmd);
-            }
+    if (cmd.isAll)
+    {
+        if (!isPerDisplayCommand(cmd.command))
+        {
+            std::cout << "[ERROR] Unknown command: " << cmd.command << "\n";
+            return;
+        }
+        for (auto &d : displays)
+        {
+            executeOnDisplay(d, cmd);
+        }
         return;
     }
 
-    Display* d = getDisplay(cmd.displayId);
-    if (!d) {
+    Display *d = getDisplay(cmd.displayId);
+    if (!d)
+    {
         std::cout << "[ERROR] Display " << cmd.displayId << " not found\n";
         return;
     }
     executeOnDisplay(*d, cmd);
 }
 
-void Controller::printStatus() {
-    for (const auto& d : displays) {
+void Controller::printStatus()
+{
+    for (const auto &d : displays)
+    {
         std::cout << d.getStatus() << "\n";
     }
 }
 
-void Controller::tickTemperatures() {
+void Controller::tickTemperatures()
+{
     // Advance the simulated temperature on every display by one tick,
     // then let Alert flag any that crossed the threshold.
-    for (auto& d : displays) {
+    for (auto &d : displays)
+    {
         d.simulateTemperature();
     }
     alert.check(displays);
 }
 
-Display* Controller::getDisplay(int id) {
-    for (auto& d : displays) {
-        if (d.getId() == id) return &d;
+Display *Controller::getDisplay(int id)
+{
+    for (auto &d : displays)
+    {
+        if (d.getId() == id)
+            return &d;
     }
     return nullptr;
 }
 
-void Controller::executeOnDisplay(Display& d, const ParsedCommand& cmd) {
-    try {
-        if (cmd.command == "SET_POWER") {
+void Controller::executeOnDisplay(Display &d, const ParsedCommand &cmd)
+{
+    try
+    {
+        if (cmd.command == "SET_POWER")
+        {
             if (cmd.args.empty())
                 throw std::invalid_argument("SET_POWER needs ON or OFF");
+            if (cmd.args[0] != "ON" && cmd.args[0] != "OFF")
+                throw std::invalid_argument(
+                    "SET_POWER must be ON or OFF, got: " + cmd.args[0]);
             d.setPower(cmd.args[0] == "ON");
         }
-        else if (cmd.command == "SET_VOLUME") {
+        else if (cmd.command == "SET_VOLUME")
+        {
             if (cmd.args.empty())
                 throw std::invalid_argument("SET_VOLUME needs a number");
-            d.setVolume(std::stoi(cmd.args[0]));
+            int val;
+            try
+            {
+                val = std::stoi(cmd.args[0]);
+            }
+            catch (const std::exception &)
+            {
+                throw std::invalid_argument(
+                    "SET_VOLUME expected a number, got: " + cmd.args[0]);
+            }
+            d.setVolume(val);
         }
-        else if (cmd.command == "SET_BRIGHTNESS") {
+        else if (cmd.command == "SET_BRIGHTNESS")
+        {
             if (cmd.args.empty())
                 throw std::invalid_argument("SET_BRIGHTNESS needs a number");
-            d.setBrightness(std::stoi(cmd.args[0]));
+            int val;
+            try
+            {
+                val = std::stoi(cmd.args[0]);
+            }
+            catch (const std::exception &)
+            {
+                throw std::invalid_argument(
+                    "SET_BRIGHTNESS expected a number, got: " + cmd.args[0]);
+            }
+            d.setBrightness(val);
         }
-        else if (cmd.command == "SET_INPUT") {
+        else if (cmd.command == "SET_INPUT")
+        {
             if (cmd.args.empty())
                 throw std::invalid_argument("SET_INPUT needs HDMI, AV, or DP");
             d.setInput(cmd.args[0]);
         }
-        else {
+        else
+        {
             std::cout << "[ERROR] Unknown command: " << cmd.command << "\n";
             return;
         }
@@ -97,7 +158,8 @@ void Controller::executeOnDisplay(Display& d, const ParsedCommand& cmd) {
         std::cout << "[OK] Display " << d.getId()
                   << " executed: " << cmd.command << "\n";
     }
-    catch (const std::exception& e) {
+    catch (const std::exception &e)
+    {
         std::cout << "[ERROR] " << e.what() << "\n";
     }
 }

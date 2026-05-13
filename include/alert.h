@@ -10,7 +10,7 @@
 class Alert {
 public:
     // Default threshold matches Display::getStatus()'s WARNING line.
-    Alert(float threshold = 36.0f);
+    Alert(float threshold = 60.0f);
 
     // Examine every display; print an [ALERT] line for each one over
     // the threshold. const-ref so we can't accidentally mutate displays.
