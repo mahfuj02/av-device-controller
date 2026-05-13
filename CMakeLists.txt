@@ -10,7 +10,7 @@ set(SOURCES
     src/display.cpp
     src/controller.cpp
     src/parser.cpp
-    # src/logger.cpp
+    src/logger.cpp
     # src/alert.cpp
 )
 

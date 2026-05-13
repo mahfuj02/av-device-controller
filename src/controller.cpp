@@ -84,7 +84,7 @@ void Controller::executeOnDisplay(Display& d, const ParsedCommand& cmd) {
             std::cout << "[ERROR] Unknown command: " << cmd.command << "\n";
             return;
         }
-
+        logger.log(d.getId(), cmd.command, cmd.args.empty() ? "" : cmd.args[0]);
         std::cout << "[OK] Display " << d.getId()
                   << " executed: " << cmd.command << "\n";
     }

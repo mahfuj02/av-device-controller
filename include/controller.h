@@ -5,6 +5,7 @@
 
 #include "display.h"
 #include "parser.h"
+#include "logger.h"
 #include <vector>
 
 class Controller {
@@ -23,6 +24,7 @@ public:
 
 private:
     std::vector<Display> displays;
+    Logger logger;   // one logger per controller, shared by all displays
 
     // Internal helpers
     Display* getDisplay(int id);                            // find by ID, nullptr if not found
