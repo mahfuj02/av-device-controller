@@ -51,6 +51,15 @@ void Controller::printStatus() {
     }
 }
 
+void Controller::tickTemperatures() {
+    // Advance the simulated temperature on every display by one tick,
+    // then let Alert flag any that crossed the threshold.
+    for (auto& d : displays) {
+        d.simulateTemperature();
+    }
+    alert.check(displays);
+}
+
 Display* Controller::getDisplay(int id) {
     for (auto& d : displays) {
         if (d.getId() == id) return &d;

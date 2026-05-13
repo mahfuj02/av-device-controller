@@ -33,6 +33,8 @@ int main() {
         } catch (const std::exception& e) {
             std::cout << "[ERROR] " << e.what() << "\n";
         }
+        ctrl.tickTemperatures();  // simulate temperature changes and check for alerts
+
     }
 
     std::cout << "Shutting down. Goodbye.\n";

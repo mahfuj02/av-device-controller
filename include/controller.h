@@ -7,7 +7,7 @@
 #include "parser.h"
 #include "logger.h"
 #include <vector>
-
+#include <alert.h>
 class Controller {
 public:
     Controller();
@@ -22,9 +22,12 @@ public:
     // Print the status line for every display.
     void printStatus();
 
+    void tickTemperatures();   // nudge every display's temperature by a random delta
+
 private:
     std::vector<Display> displays;
     Logger logger;   // one logger per controller, shared by all displays
+    Alert alert;     // one alert per controller, shared by all displays
 
     // Internal helpers
     Display* getDisplay(int id);                            // find by ID, nullptr if not found

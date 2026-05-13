@@ -11,7 +11,7 @@ set(SOURCES
     src/controller.cpp
     src/parser.cpp
     src/logger.cpp
-    # src/alert.cpp
+    src/alert.cpp
 )
 
 add_executable(av_controller ${SOURCES})
