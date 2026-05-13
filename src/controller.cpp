@@ -4,6 +4,8 @@
 #include "controller.h"
 #include <iostream>
 #include <stdexcept>
+#include <fstream>      
+#include <sstream>
 
 // Returns true if `cmd` is a per-display command that executeOnDisplay
 // knows how to run. Used to avoid spamming the same error 5 times in a
@@ -21,6 +23,44 @@ Controller::Controller()
 void Controller::addDisplay(int id, const std::string &name)
 {
     displays.emplace_back(id, name);
+}
+
+void Controller::loadConfig(const std::string& filepath) {
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open config file: " + filepath);
+    }
+
+    // Start fresh in case loadConfig is called more than once.
+    displays.clear();
+
+    std::string line;
+    int lineNumber = 0;
+    while (std::getline(file, line)) {
+        ++lineNumber;
+
+        // Skip blank lines and comments.
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream iss(line);
+        int id;
+        std::string name;
+        if (!(iss >> id >> name)) {
+            std::cerr << "[WARNING] Skipping malformed line "
+                      << lineNumber << ": " << line << "\n";
+            continue;
+        }
+
+        displays.emplace_back(id, name);
+    }
+
+    if (displays.empty()) {
+        throw std::runtime_error(
+            "Config file contains no valid displays: " + filepath);
+    }
+
+    std::cout << "[SYSTEM] Loaded " << displays.size()
+              << " displays from " << filepath << "\n";
 }
 
 void Controller::execute(const ParsedCommand &cmd)

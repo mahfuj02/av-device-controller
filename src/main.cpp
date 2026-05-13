@@ -9,13 +9,14 @@
 int main() {
     Controller ctrl;
 
-    // Hardcode some displays for now. Day 9 will replace this with
-    // loading from config/displays.cfg.
-    ctrl.addDisplay(1, "MainBar");
-    ctrl.addDisplay(2, "PoolTable");
-    ctrl.addDisplay(3, "Entrance");
-    ctrl.addDisplay(4, "Patio");
-    ctrl.addDisplay(5, "BackRoom");
+    // Load display configuration. If this fails (missing file, empty file)
+    // there's nothing useful to do, so bail with a non-zero exit code.
+    try {
+        ctrl.loadConfig();      // uses default ../config/displays.cfg
+    } catch (const std::exception& e) {
+        std::cerr << "[FATAL] " << e.what() << "\n";
+        return 1;
+    }
 
     std::cout << "AV Device Controller v1.0\n";
     std::cout << "Type HELP for commands. Type QUIT to exit.\n\n";

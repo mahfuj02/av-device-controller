@@ -15,7 +15,7 @@ public:
     // Add a display to the system. Used at startup until Day 9 wires
     // up the config file loader.
     void addDisplay(int id, const std::string& name);
-
+    void loadConfig(const std::string& filepath = "../config/displays.cfg");  //  load displays from a config file        
     // Take a parsed command and act on it.
     void execute(const ParsedCommand& cmd);
 
