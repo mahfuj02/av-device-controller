@@ -17,3 +17,11 @@ set(SOURCES
 add_executable(av_controller ${SOURCES})
 
 target_include_directories(av_controller PRIVATE include)
+
+
+# --- Parser unit tests (separate executable) ---
+add_executable(test_parser
+    tests/test_parser.cpp
+    src/parser.cpp
+)
+target_include_directories(test_parser PRIVATE include)
