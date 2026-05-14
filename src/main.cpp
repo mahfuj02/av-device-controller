@@ -1,5 +1,5 @@
-// main.cpp — Day 4 REPL (Read-Eval-Print Loop).
-// Interactive command prompt that drives the Controller end-to-end.
+// main.cpp — interactive REPL (Read-Eval-Print Loop).
+// Loads the display config, then reads and dispatches user commands.
 
 #include "controller.h"
 #include "parser.h"
@@ -12,7 +12,7 @@ int main() {
     // Load display configuration. If this fails (missing file, empty file)
     // there's nothing useful to do, so bail with a non-zero exit code.
     try {
-        ctrl.loadConfig();      // uses default ../config/displays.cfg
+        ctrl.loadConfig(); // uses default ../config/displays.cfg
     } catch (const std::exception& e) {
         std::cerr << "[FATAL] " << e.what() << "\n";
         return 1;
@@ -24,9 +24,12 @@ int main() {
     std::string input;
     while (true) {
         std::cout << "> ";
-        if (!std::getline(std::cin, input)) break;   // Ctrl+Z / EOF
-        if (input.empty()) continue;
-        if (input == "QUIT" || input == "quit") break;
+        if (!std::getline(std::cin, input))
+            break; // Ctrl+Z / EOF
+        if (input.empty())
+            continue;
+        if (input == "QUIT" || input == "quit")
+            break;
 
         try {
             ParsedCommand cmd = parse(input);
@@ -34,8 +37,7 @@ int main() {
         } catch (const std::exception& e) {
             std::cout << "[ERROR] " << e.what() << "\n";
         }
-        ctrl.tickTemperatures();  // simulate temperature changes and check for alerts
-
+        ctrl.tickTemperatures(); // simulate temperature changes and check for alerts
     }
 
     std::cout << "Shutting down. Goodbye.\n";

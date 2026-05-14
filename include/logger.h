@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include <string>
 #include <fstream>
+#include <string>
 
 class Logger {
-public:
+  public:
     // Default path assumes the program is launched from `build/`,
     // which is the convention for CMake out-of-source builds.
     // `../logs/events.log` resolves to <project_root>/logs/events.log.
@@ -16,10 +16,9 @@ public:
 
     // Append one entry. `value` is optional — useful for SET_VOLUME = 60
     // but irrelevant for things like STATUS.
-    void log(int displayId, const std::string& event,
-             const std::string& value = "");
+    void log(int displayId, const std::string& event, const std::string& value = "");
 
-private:
+  private:
     std::ofstream file;
-    std::string getCurrentTime();    // returns "HH:MM:SS"
+    std::string getCurrentTime(); // returns "HH:MM:SS"
 };

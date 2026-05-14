@@ -16,22 +16,20 @@ Logger::Logger(const std::string& filepath) {
         throw std::runtime_error("Cannot open log file: " + filepath);
 }
 
-void Logger::log(int id, const std::string& event,
-                 const std::string& value) {
-    file << getCurrentTime()
-         << " [Display " << id << "] "
-         << event;
-    if (!value.empty()) file << " = " << value;
+void Logger::log(int id, const std::string& event, const std::string& value) {
+    file << getCurrentTime() << " [Display " << id << "] " << event;
+    if (!value.empty())
+        file << " = " << value;
     file << "\n";
-    file.flush();   // force the write to disk now, not whenever the OS feels like it
+    file.flush(); // force the write to disk now, not whenever the OS feels like it
 }
 
 std::string Logger::getCurrentTime() {
     // 3-step recipe to turn "now" into a formatted string.
-    auto now = std::chrono::system_clock::now();              // time point
+    auto now = std::chrono::system_clock::now();               // time point
     std::time_t t = std::chrono::system_clock::to_time_t(now); // convert to C-style time_t
     char buf[20];
     std::strftime(buf, sizeof(buf), "%H:%M:%S",
-                  std::localtime(&t));                        // format into the buffer
+                  std::localtime(&t)); // format into the buffer
     return std::string(buf);
 }

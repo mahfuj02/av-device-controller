@@ -9,12 +9,10 @@
 // Filled in by parse(), consumed by Controller.
 
 struct ParsedCommand {
-    bool isAll;            // true if the command is "ALL" (applies to all displays)
-    int displayId;        // if not ALL, the numeric ID of the target display
-    std::string command;   // the command verb, e.g. "POWER",  SET_VOLUME", etc.
-    std::vector<std::string> args;  // any additional arguments, e.g. ["ON"], ["60"], etc.
+    bool isAll;                    // true if the command is "ALL" (applies to all displays)
+    int displayId;                 // if not ALL, the numeric ID of the target display
+    std::string command;           // the command verb, e.g.  "SET_VOLUME", etc.
+    std::vector<std::string> args; // any additional arguments, e.g. ["ON"], ["60"], etc.
 };
 
 ParsedCommand parse(const std::string& input);
-
-

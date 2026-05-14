@@ -87,7 +87,7 @@ void testAllMissingCommandThrows() {
     }
 }
 
-// --- Error case: non-numeric DISPLAY ID must throw (Day 8 fix) ---
+// --- Error case: non-numeric DISPLAY ID must throw ---
 void testNonNumericIdThrows() {
     try {
         parse("DISPLAY abc SET_VOLUME 60");

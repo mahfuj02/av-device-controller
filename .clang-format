@@ -1,0 +1,7 @@
+# Code style for the AV Device Controller project.
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: All

@@ -8,7 +8,7 @@
 #include <vector>
 
 class Alert {
-public:
+  public:
     // Default threshold matches Display::getStatus()'s WARNING line.
     Alert(float threshold = 60.0f);
 
@@ -16,6 +16,6 @@ public:
     // the threshold. const-ref so we can't accidentally mutate displays.
     void check(const std::vector<Display>& displays);
 
-private:
+  private:
     float threshold;
 };
