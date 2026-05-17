@@ -7,8 +7,17 @@
 #include <chrono>
 #include <ctime>
 #include <stdexcept>
+#include <filesystem>
+
 
 Logger::Logger(const std::string& filepath) {
+
+    // Ensure the parent directory exists (so a fresh clone with no `logs/`
+    // folder works out of the box).
+    auto parent = std::filesystem::path(filepath).parent_path();
+    if (!parent.empty()) {
+        std::filesystem::create_directories(parent);
+    }
     // std::ios::app = "append" — every write goes at the end of the file.
     // Without this flag, opening a file in write mode truncates it.
     file.open(filepath, std::ios::app);
