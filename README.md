@@ -2,9 +2,7 @@
 
 ![demo](demo.gif)
 
-A C++17 command-line system that simulates centralized control of multiple AV
-displays in a venue — power, volume, input switching, temperature monitoring,
-and timestamped event logging from a single interface.
+A C++17 command-line system that simulates centralized control of multiple AV displays extended to real hardware via an Arduino + BME280 sensor over I2C.
 
 Built as a portfolio piece exploring layered architecture, defensive input
 handling, and the kind of control logic that runs underneath commercial AV
@@ -52,6 +50,14 @@ Shutting down. Goodbye.
 
 
 ---
+## Hardware extension
+
+The controller's temperature monitoring was extended to real hardware:
+an Arduino Uno reading temperature, humidity, and pressure from a BME280
+sensor over I2C. The same threshold-based alert from the simulation fires
+when the live sensor reading crosses the configured limit.
+
+![BME280 temperature monitoring over I2C on Arduino Uno](bme280_i2c_demo.gif)
 
 ## Features
 
